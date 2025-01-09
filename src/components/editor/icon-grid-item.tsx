@@ -11,7 +11,7 @@ export interface IconGridItemProps {
     onClick: () => void
 }
 
-export function IconGridItem({ icon: Icon, name, selected, onClick }: IconGridItemProps) {
+export function IconGridItem({ icon: Icon, selected, onClick }: IconGridItemProps) {
     return (
         <Button
             variant="ghost"

@@ -49,6 +49,7 @@ export function AiIconModal({ onSelectIcon }: AiIconModalProps) {
             const data = await response.json()
             setSuggestions(data.icons)
         } catch (err) {
+            console.log(err)
             setError("Failed to get icon suggestions. Please try again.")
         } finally {
             setLoading(false)

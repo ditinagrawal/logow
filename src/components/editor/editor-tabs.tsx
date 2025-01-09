@@ -87,7 +87,7 @@ function SliderControl({
 }
 
 export function EditorTabs() {
-    const { properties: iconProps, setProperties: setIconProps, selectedIcon } = useIcon()
+    const { properties: iconProps, setProperties: setIconProps } = useIcon()
     const { properties: bgProps, setProperties: setBgProps } = useBackground()
 
     return (

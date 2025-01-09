@@ -1,11 +1,9 @@
 "use server"
 
 import { NextResponse } from 'next/server'
-import OpenAI from 'openai'
+import { GoogleGenerativeAI } from "@google/generative-ai"
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
-})
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 
 // List of available icons
 const AVAILABLE_ICONS = [
@@ -82,31 +80,24 @@ export async function POST(req: Request) {
         const body = await req.json() as IconRequest
         const prompt = body.prompt || ''
 
-        const completion = await openai.chat.completions.create({
-            model: "gpt-4",
-            messages: [
-                {
-                    role: "system",
-                    content: `You are an AI that suggests icon names from this specific list of available icons:
-          ${AVAILABLE_ICONS.join(', ')}
-          
-          When given a prompt, analyze it and return exactly 3 icon names that best match the request.
-          Return your response in this exact format, with no additional text:
-          {"icons": ["IconName1", "IconName2", "IconName3"]}
-          
-          Make sure to ONLY use icon names from the provided list.
-          If you're not sure about the exact icon names, prefer using general-purpose icons like Search, Star, or Heart.`
-                },
-                {
-                    role: "user",
-                    content: prompt
-                }
-            ],
-            temperature: 0.7,
-            max_tokens: 150
-        })
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" })
 
-        const response = completion.choices[0].message.content
+        const systemPrompt = `You are an AI that suggests icon names from this specific list of available icons:
+${AVAILABLE_ICONS.join(', ')}
+
+When given a prompt, analyze it and return exactly 3 icon names that best match the request.
+Return your response in this exact format, with no additional text:
+{"icons": ["IconName1", "IconName2", "IconName3"]}
+
+Make sure to ONLY use icon names from the provided list.
+If you're not sure about the exact icon names, prefer using general-purpose icons like Search, Star, or Heart.`
+
+        const result = await model.generateContent([
+            systemPrompt,
+            prompt
+        ])
+        const response = result.response.text()
+
         if (!response) {
             const fallbackIcons = findSimilarIcons(prompt)
             return NextResponse.json({ icons: fallbackIcons })
@@ -128,7 +119,7 @@ export async function POST(req: Request) {
                 return NextResponse.json({ icons: validIcons })
             }
 
-            // If we don't have valid suggestions from OpenAI, use our fallback method
+            // If we don't have valid suggestions from Gemini, use our fallback method
             const fallbackIcons = findSimilarIcons(prompt)
             return NextResponse.json({ icons: fallbackIcons })
 

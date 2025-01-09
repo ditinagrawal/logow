@@ -73,7 +73,7 @@ export function AiIconModal({ onSelectIcon }: AiIconModalProps) {
                 <DialogHeader>
                     <DialogTitle>AI Icon Suggestions</DialogTitle>
                     <DialogDescription>
-                        Describe the icon you're looking for and AI will suggest matching icons.
+                        Describe the icon you&apos;re looking for and AI will suggest matching icons.
                     </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit}>
